@@ -1,0 +1,1432 @@
+<!DOCTYPE html>
+<html lang="so">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Baqti Nasiib — Qaybta Fadhiga</title>
+<meta name="theme-color" content="#ffffff" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        fontFamily: { sans: ['"Plus Jakarta Sans"', 'ui-sans-serif', 'system-ui', 'sans-serif'] },
+        boxShadow: {
+          soft: '0 1px 2px rgba(15,23,42,.04), 0 12px 32px -12px rgba(15,23,42,.14)',
+          lift: '0 2px 4px rgba(15,23,42,.05), 0 24px 48px -18px rgba(16,185,129,.45)'
+        }
+      }
+    }
+  }
+</script>
+<style>
+  :root { color-scheme: light; }
+  html, body { background: #f8fafc; }
+  body {
+    background-image:
+      radial-gradient(1100px 520px at 12% -12%, rgba(16,185,129,.10), transparent 60%),
+      radial-gradient(900px 460px at 92% 0%, rgba(56,189,248,.12), transparent 62%),
+      radial-gradient(760px 420px at 50% 108%, rgba(251,191,36,.10), transparent 60%);
+    background-attachment: fixed;
+  }
+  .pitch-lines {
+    background-image: repeating-linear-gradient(90deg, rgba(16,185,129,.07) 0 26px, transparent 26px 52px);
+  }
+  @keyframes popIn {
+    0%   { transform: scale(.72) translateY(10px); opacity: 0; }
+    55%  { transform: scale(1.09) translateY(-3px); opacity: 1; }
+    78%  { transform: scale(.97) translateY(0); }
+    100% { transform: scale(1) translateY(0); opacity: 1; }
+  }
+  .pop { animation: popIn .58s cubic-bezier(.2,.9,.25,1.15) both; }
+  @keyframes ringBurst {
+    0%   { box-shadow: 0 0 0 0 rgba(16,185,129,.45); }
+    100% { box-shadow: 0 0 0 24px rgba(16,185,129,0); }
+  }
+  .ring-burst { animation: ringBurst .9s ease-out 1; }
+  @keyframes rollJitter {
+    0%,100% { transform: translateY(0); }
+    50%     { transform: translateY(-2px); }
+  }
+  .rolling { animation: rollJitter .11s linear infinite; }
+  @keyframes shimmer {
+    0%   { background-position: -420px 0; }
+    100% { background-position: 420px 0; }
+  }
+  .shimmer {
+    background-image: linear-gradient(90deg, rgba(241,245,249,.6) 0%, rgba(255,255,255,1) 45%, rgba(241,245,249,.6) 90%);
+    background-size: 420px 100%;
+    animation: shimmer 1.15s linear infinite;
+  }
+  @keyframes fall {
+    0%   { transform: translate3d(0,-12vh,0) rotate(0deg); opacity: 1; }
+    100% { transform: translate3d(var(--dx,0), 108vh, 0) rotate(var(--rot,540deg)); opacity: 0; }
+  }
+  .confetti-bit { position: fixed; top: -24px; width: 9px; height: 14px; border-radius: 2px; pointer-events: none; z-index: 70; animation: fall linear forwards; }
+  @keyframes riseIn { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: translateY(0); } }
+  .rise { animation: riseIn .45s cubic-bezier(.2,.8,.3,1) both; }
+  @keyframes toastIn { from { opacity: 0; transform: translate(-50%, 22px) scale(.96); } to { opacity: 1; transform: translate(-50%, 0) scale(1); } }
+  .toast-in { animation: toastIn .3s cubic-bezier(.2,.8,.3,1) both; }
+  .chip-input:checked + .chip-body {
+    border-color: #f59e0b;
+    background: linear-gradient(180deg, #fffbeb, #fef3c7);
+    box-shadow: 0 10px 22px -12px rgba(245,158,11,.75);
+  }
+  .chip-input:checked + .chip-body .chip-dot { background: #f59e0b; border-color: #f59e0b; }
+  .chip-input:checked + .chip-body .chip-dot svg { opacity: 1; transform: scale(1); }
+  .chip-input:focus-visible + .chip-body { outline: 2px solid #0ea5e9; outline-offset: 2px; }
+  /* Liiska la ilaalinayo — midab indigo si looga kala saaro kuwa iskood u fadhiistay */
+  #protGrid .chip-input:checked + .chip-body {
+    border-color: #6366f1;
+    background: linear-gradient(180deg, #eef2ff, #e0e7ff);
+    box-shadow: 0 10px 22px -12px rgba(99,102,241,.75);
+  }
+  #protGrid .chip-input:checked + .chip-body .chip-dot { background: #6366f1; border-color: #6366f1; }
+  /* Qof horey loogu doortay liiska kale — waa damman */
+  .chip-input:disabled + .chip-body {
+    opacity: .45;
+    cursor: not-allowed;
+    background: #f8fafc;
+    border-color: #e2e8f0;
+    box-shadow: none;
+  }
+  .chip-input:disabled + .chip-body .chip-lock { display: inline; }
+  .num { font-variant-numeric: tabular-nums; }
+  ::selection { background: #a7f3d0; color: #064e3b; }
+  @media (prefers-reduced-motion: reduce) {
+    .pop, .rise, .rolling, .ring-burst, .shimmer, .confetti-bit { animation: none !important; }
+  }
+  @media print {
+    body { background: #fff; background-image: none; }
+    .no-print { display: none !important; }
+  }
+</style>
+</head>
+<body class="min-h-screen font-sans text-slate-800 antialiased">
+
+<div class="mx-auto w-full max-w-4xl px-4 pb-16 pt-6 sm:pt-10">
+
+  <!-- ================= HEADER ================= -->
+  <header class="rise relative overflow-hidden rounded-[28px] border border-emerald-100 bg-white p-6 shadow-soft sm:p-8">
+    <div class="pitch-lines pointer-events-none absolute inset-0 opacity-60"></div>
+    <div class="pointer-events-none absolute -right-16 -top-20 h-52 w-52 rounded-full bg-emerald-100/60 blur-2xl"></div>
+    <div class="pointer-events-none absolute -bottom-20 -left-14 h-44 w-44 rounded-full bg-sky-100/70 blur-2xl"></div>
+
+    <div class="relative flex flex-col gap-5 sm:flex-row sm:items-start sm:justify-between">
+      <div>
+        <div class="mb-3 inline-flex items-center gap-2 rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1 text-[11px] font-bold uppercase tracking-wider text-emerald-700">
+          <span class="grid h-4 w-4 place-items-center rounded-full bg-emerald-500 text-[9px] text-white">&#9917;</span>
+          Kooxda &middot; 16 ciyaartoy
+        </div>
+        <h1 class="text-3xl font-extrabold leading-tight tracking-tight text-slate-900 sm:text-[40px]">
+          Baqti <span class="bg-gradient-to-r from-emerald-500 via-emerald-600 to-sky-500 bg-clip-text text-transparent">Nasiib</span>
+        </h1>
+        <p class="mt-2 max-w-md text-[15px] leading-relaxed text-slate-500">
+          Qaybta fadhiga ee maalinta ciyaarta &mdash; si caddaalad ah oo furan ayaa loo saaraa
+          <span class="font-semibold text-slate-700">6</span> ciyaartoy oo fadhiya,
+          <span class="font-semibold text-slate-700">10</span>-na way ciyaarayaan.
+        </p>
+      </div>
+      <div class="shrink-0 rounded-2xl border border-slate-200 bg-slate-50/80 px-4 py-3 text-center sm:min-w-[190px] sm:text-right">
+        <div class="text-[11px] font-bold uppercase tracking-wider text-slate-400">Taariikhda maanta</div>
+        <div id="headerDate" class="mt-1 text-sm font-bold leading-snug text-slate-800">&mdash;</div>
+        <div id="lockPill" class="mt-2 hidden items-center justify-center gap-1.5 rounded-full bg-emerald-100 px-2.5 py-1 text-[11px] font-bold text-emerald-700 sm:justify-end">
+          <span>&#128274;</span> Waa la xiray maanta
+        </div>
+      </div>
+    </div>
+
+    <div class="relative mt-6 grid grid-cols-3 gap-3">
+      <div class="rounded-2xl border border-slate-100 bg-slate-50/70 px-3 py-3 text-center">
+        <div class="num text-2xl font-extrabold text-slate-900">16</div>
+        <div class="text-[11px] font-semibold uppercase tracking-wide text-slate-400">Kooxda</div>
+      </div>
+      <div class="rounded-2xl border border-emerald-100 bg-emerald-50/70 px-3 py-3 text-center">
+        <div class="num text-2xl font-extrabold text-emerald-600">10</div>
+        <div class="text-[11px] font-semibold uppercase tracking-wide text-emerald-600/70">Ciyaaraya</div>
+      </div>
+      <div class="rounded-2xl border border-amber-100 bg-amber-50/70 px-3 py-3 text-center">
+        <div class="num text-2xl font-extrabold text-amber-600">6</div>
+        <div class="text-[11px] font-semibold uppercase tracking-wide text-amber-600/80">Fadhiya</div>
+      </div>
+    </div>
+  </header>
+
+  <!-- ================= DIGNIIN: KEYDKA ================= -->
+  <div id="storageWarn" class="no-print mt-6 hidden rounded-[28px] border-2 border-amber-200 bg-amber-50 p-5">
+    <div class="flex gap-3">
+      <span class="text-xl leading-none">&#9888;&#65039;</span>
+      <div>
+        <div class="text-sm font-extrabold text-amber-800">Keydka browser-ku ma shaqaynayo</div>
+        <p class="mt-1 text-[13.5px] leading-relaxed text-amber-700">
+          Xiritaanka maalinlaha ah ma sii jiri doono haddii bogga dib loo cusboonaysiiyo &mdash; baqti nasiib cusub
+          ayaa la sameyn karaa. Si tan loo hagaajiyo, bogga ka fur server maxalli ah ama internet, halkii aad
+          si toos ah faylka uga furi lahayd.
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= STEP 1 — QUESTION ================= -->
+  <section id="screen-start" class="no-print mt-6 hidden rounded-[28px] border border-slate-100 bg-white p-6 shadow-soft sm:p-8">
+    <div class="mb-4 inline-flex items-center gap-2 rounded-full bg-sky-50 px-3 py-1 text-[11px] font-bold uppercase tracking-wider text-sky-600">
+      Tallaabo 1 &middot; Hubinta
+    </div>
+    <h2 class="text-xl font-extrabold leading-snug text-slate-900 sm:text-2xl">
+      Ma jiraan ciyaartoy iskood u fadhiista ka hor baqti nasiibka?
+    </h2>
+    <p class="mt-2 text-[15px] leading-relaxed text-slate-500">
+      Haddii ciyaartoy iskood u fadhiisteen, tiradooda waa laga jaraa 6-da fadhiga &mdash; inta hadhaysana
+      ayaa baqti nasiib laga qaadayaa.
+    </p>
+
+    <div class="mt-6 grid gap-3 sm:grid-cols-2">
+      <button id="btnYes" type="button"
+        class="flex items-center gap-4 rounded-2xl border-2 border-amber-200 bg-amber-50/60 p-4 text-left transition hover:-translate-y-0.5 hover:border-amber-300 hover:bg-amber-50 hover:shadow-lg hover:shadow-amber-100 active:translate-y-0">
+        <span class="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-amber-400 text-xl text-white shadow-sm">&#9995;</span>
+        <span>
+          <span class="block text-base font-extrabold text-slate-900">Haa &mdash; way jiraan</span>
+          <span class="block text-[13px] text-slate-500">Dooro kuwa iskood u fadhiistay</span>
+        </span>
+      </button>
+      <button id="btnNo" type="button"
+        class="flex items-center gap-4 rounded-2xl border-2 border-emerald-200 bg-emerald-50/60 p-4 text-left transition hover:-translate-y-0.5 hover:border-emerald-300 hover:bg-emerald-50 hover:shadow-lg hover:shadow-emerald-100 active:translate-y-0">
+        <span class="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-emerald-500 text-xl text-white shadow-sm">&#9917;</span>
+        <span>
+          <span class="block text-base font-extrabold text-slate-900">Maya &mdash; dhammaan diyaar</span>
+          <span class="block text-[13px] text-slate-500">6 ka mid ah 16-ka ayaa la saarayaa</span>
+        </span>
+      </button>
+    </div>
+  </section>
+
+  <!-- ================= STEP 1b — VOLUNTEERS ================= -->
+  <section id="screen-volunteers" class="no-print mt-6 hidden rounded-[28px] border border-slate-100 bg-white p-6 shadow-soft sm:p-8">
+    <div class="flex flex-wrap items-start justify-between gap-3">
+      <div>
+        <div class="mb-3 inline-flex items-center gap-2 rounded-full bg-amber-50 px-3 py-1 text-[11px] font-bold uppercase tracking-wider text-amber-600">
+          Tallaabo 1b &middot; Kuwa iskood u fadhiistay
+        </div>
+        <h2 class="text-xl font-extrabold text-slate-900 sm:text-2xl">Dooro ciyaartoyda iskood u fadhiistay</h2>
+        <p class="mt-1 text-[15px] text-slate-500">Taabo magaca qof kasta oo iskiis u fadhiistay.</p>
+      </div>
+      <button id="btnBackStart" type="button"
+        class="rounded-xl border border-slate-200 bg-white px-3.5 py-2 text-sm font-semibold text-slate-500 transition hover:border-slate-300 hover:text-slate-700">
+        &larr; Dib u noqo
+      </button>
+    </div>
+
+    <div id="volGrid" class="mt-6 grid grid-cols-2 gap-2.5 sm:grid-cols-3 lg:grid-cols-4"></div>
+
+    <div class="mt-6 rounded-2xl border border-slate-100 bg-slate-50/80 p-4">
+      <div class="grid grid-cols-3 gap-2 text-center">
+        <div class="rounded-xl bg-white px-2 py-3 shadow-sm ring-1 ring-slate-100">
+          <div id="mathVol" class="num text-2xl font-extrabold text-amber-500">0</div>
+          <div class="mt-0.5 text-[11px] font-semibold leading-tight text-slate-400">Fadhiistay iskood</div>
+        </div>
+        <div class="rounded-xl bg-white px-2 py-3 shadow-sm ring-1 ring-slate-100">
+          <div id="mathDraw" class="num text-2xl font-extrabold text-emerald-600">6</div>
+          <div class="mt-0.5 text-[11px] font-semibold leading-tight text-slate-400">Baqti nasiib laga qaadayo</div>
+        </div>
+        <div class="rounded-xl bg-white px-2 py-3 shadow-sm ring-1 ring-slate-100">
+          <div id="mathPool" class="num text-2xl font-extrabold text-sky-600">16</div>
+          <div class="mt-0.5 text-[11px] font-semibold leading-tight text-slate-400">Ku jira qorshaha</div>
+        </div>
+      </div>
+      <p id="mathLine" class="mt-3 text-center text-[13px] font-semibold text-slate-500">
+        Fadhiistay iskood: 0 &middot; Baqti nasiib laga qaadayaa: 6 &middot; Ku jira qorshaha: 16
+      </p>
+    </div>
+
+    <div id="volWarn" class="mt-4 hidden rounded-2xl border-2 border-rose-200 bg-rose-50 p-4">
+      <div class="flex gap-3">
+        <span class="text-xl leading-none">&#9888;&#65039;</span>
+        <div>
+          <div class="text-sm font-extrabold text-rose-700">Digniin</div>
+          <p id="volWarnText" class="mt-1 text-[13.5px] leading-relaxed text-rose-600"></p>
+          <label class="mt-3 flex cursor-pointer items-center gap-2 text-[13.5px] font-semibold text-rose-700">
+            <input id="volConfirm" type="checkbox" class="h-4 w-4 rounded border-rose-300 text-rose-600 focus:ring-rose-400" />
+            Waan xaqiijinayaa &mdash; sii wad
+          </label>
+        </div>
+      </div>
+    </div>
+
+    <div id="volExact" class="mt-4 hidden rounded-2xl border-2 border-emerald-200 bg-emerald-50 p-4 text-[13.5px] font-semibold leading-relaxed text-emerald-700">
+      &#127881; Lix ciyaartoy ayaa iskood u fadhiistay &mdash; baqti nasiib looma baahna. Natiijada si toos ah ayaa loo muujinayaa.
+    </div>
+
+    <button id="btnVolNext" type="button" disabled
+      class="mt-6 w-full rounded-2xl bg-gradient-to-r from-emerald-500 to-emerald-600 px-6 py-4 text-base font-extrabold text-white shadow-lift transition enabled:hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:from-slate-200 disabled:to-slate-200 disabled:text-slate-400 disabled:shadow-none">
+      Sii wad
+    </button>
+  </section>
+
+  <!-- ================= STEP 1c — PROTECTED: QUESTION ================= -->
+  <section id="screen-protected-q" class="no-print mt-6 hidden rounded-[28px] border border-slate-100 bg-white p-6 shadow-soft sm:p-8">
+    <div class="flex flex-wrap items-start justify-between gap-3">
+      <div>
+        <div class="mb-3 inline-flex items-center gap-2 rounded-full bg-indigo-50 px-3 py-1 text-[11px] font-bold uppercase tracking-wider text-indigo-600">
+          Tallaabo 1c &middot; Ilaalinta
+        </div>
+        <h2 class="text-xl font-extrabold leading-snug text-slate-900 sm:text-2xl">
+          Ma jiraan ciyaartoy baqti nasiibkii hore ku dhacay?
+        </h2>
+        <p class="mt-2 max-w-xl text-[15px] leading-relaxed text-slate-500">
+          Ciyaartoyda baqtigii hore lagu saaray waa la ilaalinayaa &mdash; maanta way ciyaarayaan, oo
+          baqti nasiibka kama mid noqonayaan. Kuwa <span class="font-semibold text-slate-700">iskood</span>
+          u fadhiistay ilaalin ma helayaan &mdash; sida caadiga ah ayay qorshaha ugu jiraan.
+        </p>
+      </div>
+      <button id="btnBackProtQ" type="button"
+        class="rounded-xl border border-slate-200 bg-white px-3.5 py-2 text-sm font-semibold text-slate-500 transition hover:border-slate-300 hover:text-slate-700">
+        &larr; Dib u noqo
+      </button>
+    </div>
+
+    <div class="mt-6 grid gap-3 sm:grid-cols-2">
+      <button id="btnProtYes" type="button"
+        class="flex items-center gap-4 rounded-2xl border-2 border-indigo-200 bg-indigo-50/60 p-4 text-left transition hover:-translate-y-0.5 hover:border-indigo-300 hover:bg-indigo-50 hover:shadow-lg hover:shadow-indigo-100 active:translate-y-0">
+        <span class="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-indigo-500 text-xl text-white shadow-sm">&#128737;&#65039;</span>
+        <span>
+          <span class="block text-base font-extrabold text-slate-900">Haa &mdash; way jiraan</span>
+          <span class="block text-[13px] text-slate-500">Dooro kuwa baqtigii hore ku dhacay</span>
+        </span>
+      </button>
+      <button id="btnProtNo" type="button"
+        class="flex items-center gap-4 rounded-2xl border-2 border-emerald-200 bg-emerald-50/60 p-4 text-left transition hover:-translate-y-0.5 hover:border-emerald-300 hover:bg-emerald-50 hover:shadow-lg hover:shadow-emerald-100 active:translate-y-0">
+        <span class="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-emerald-500 text-xl text-white shadow-sm">&#9917;</span>
+        <span>
+          <span class="block text-base font-extrabold text-slate-900">Maya &mdash; midna ma jiro</span>
+          <span class="block text-[13px] text-slate-500">Dhammaan way ku jiraan baqti nasiibka</span>
+        </span>
+      </button>
+    </div>
+  </section>
+
+  <!-- ================= STEP 1d — PROTECTED: PICKER ================= -->
+  <section id="screen-protected" class="no-print mt-6 hidden rounded-[28px] border border-slate-100 bg-white p-6 shadow-soft sm:p-8">
+    <div class="flex flex-wrap items-start justify-between gap-3">
+      <div>
+        <div class="mb-3 inline-flex items-center gap-2 rounded-full bg-indigo-50 px-3 py-1 text-[11px] font-bold uppercase tracking-wider text-indigo-600">
+          Tallaabo 1d &middot; Kuwa la ilaalinayo
+        </div>
+        <h2 class="text-xl font-extrabold text-slate-900 sm:text-2xl">Dooro kuwa baqtigii hore ku dhacay</h2>
+        <p class="mt-1 text-[15px] text-slate-500">
+          Kuwan waa la ilaalinayaa &mdash; si toos ah ayay u galayaan 10-ka ciyaaraya.
+        </p>
+      </div>
+      <button id="btnBackProt" type="button"
+        class="rounded-xl border border-slate-200 bg-white px-3.5 py-2 text-sm font-semibold text-slate-500 transition hover:border-slate-300 hover:text-slate-700">
+        &larr; Dib u noqo
+      </button>
+    </div>
+
+    <div id="protGrid" class="mt-6 grid grid-cols-2 gap-2.5 sm:grid-cols-3 lg:grid-cols-4"></div>
+
+    <p id="protHint" class="mt-3 hidden text-[12.5px] font-semibold text-slate-400">
+      &#8505;&#65039; Ciyaartoyda iskood u fadhiistay way damman yihiin &mdash; hal qof labada liis kuma jiri karo.
+    </p>
+
+    <div class="mt-6 rounded-2xl border border-slate-100 bg-slate-50/80 p-4">
+      <div class="grid grid-cols-2 gap-2 text-center sm:grid-cols-4">
+        <div class="rounded-xl bg-white px-2 py-3 shadow-sm ring-1 ring-slate-100">
+          <div id="pMathVol" class="num text-2xl font-extrabold text-amber-500">0</div>
+          <div class="mt-0.5 text-[11px] font-semibold leading-tight text-slate-400">Fadhiistay iskood</div>
+        </div>
+        <div class="rounded-xl bg-white px-2 py-3 shadow-sm ring-1 ring-slate-100">
+          <div id="pMathProt" class="num text-2xl font-extrabold text-indigo-600">0</div>
+          <div class="mt-0.5 text-[11px] font-semibold leading-tight text-slate-400">La ilaaliyay</div>
+        </div>
+        <div class="rounded-xl bg-white px-2 py-3 shadow-sm ring-1 ring-slate-100">
+          <div id="pMathDraw" class="num text-2xl font-extrabold text-emerald-600">6</div>
+          <div class="mt-0.5 text-[11px] font-semibold leading-tight text-slate-400">Baqti laga qaadayo</div>
+        </div>
+        <div class="rounded-xl bg-white px-2 py-3 shadow-sm ring-1 ring-slate-100">
+          <div id="pMathPool" class="num text-2xl font-extrabold text-sky-600">16</div>
+          <div class="mt-0.5 text-[11px] font-semibold leading-tight text-slate-400">Ku jira qorshaha</div>
+        </div>
+      </div>
+      <p id="pMathLine" class="mt-3 text-center text-[13px] font-semibold text-slate-500">
+        Fadhiistay iskood: 0 &middot; La ilaaliyay: 0 &middot; Baqti laga qaadayaa: 6 &middot; Ku jira qorshaha: 16
+      </p>
+    </div>
+
+    <div id="protWarn" class="mt-4 hidden rounded-2xl border-2 border-rose-200 bg-rose-50 p-4">
+      <div class="flex gap-3">
+        <span class="text-xl leading-none">&#9888;&#65039;</span>
+        <div>
+          <div class="text-sm font-extrabold text-rose-700">Baqti nasiibku ma suurtogeli karo</div>
+          <p id="protWarnText" class="mt-1 text-[13.5px] leading-relaxed text-rose-600"></p>
+        </div>
+      </div>
+    </div>
+
+    <div id="protExact" class="mt-4 hidden rounded-2xl border-2 border-emerald-200 bg-emerald-50 p-4 text-[13.5px] font-semibold leading-relaxed text-emerald-700">
+      &#127881; Baqti nasiib looma baahna &mdash; 6-da fadhiya mar horaa la buuxiyay. Natiijada si toos ah ayaa loo muujinayaa.
+    </div>
+
+    <button id="btnProtNext" type="button"
+      class="mt-6 w-full rounded-2xl bg-gradient-to-r from-emerald-500 to-emerald-600 px-6 py-4 text-base font-extrabold text-white shadow-lift transition enabled:hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:from-slate-200 disabled:to-slate-200 disabled:text-slate-400 disabled:shadow-none">
+      Sii wad
+    </button>
+  </section>
+
+  <!-- ================= STEP 2 — DRAW ================= -->
+  <section id="screen-draw" class="no-print mt-6 hidden rounded-[28px] border border-slate-100 bg-white p-6 shadow-soft sm:p-8">
+    <div class="flex flex-wrap items-start justify-between gap-3">
+      <div>
+        <div class="mb-3 inline-flex items-center gap-2 rounded-full bg-emerald-50 px-3 py-1 text-[11px] font-bold uppercase tracking-wider text-emerald-600">
+          Tallaabo 2 &middot; Baqti nasiibka
+        </div>
+        <h2 class="text-xl font-extrabold text-slate-900 sm:text-2xl">Xafladda baqti nasiibka</h2>
+        <p id="drawSubtitle" class="mt-1 text-[15px] text-slate-500">&mdash;</p>
+      </div>
+      <div class="flex shrink-0 items-center gap-2">
+        <button id="btnBackDraw" type="button"
+          class="rounded-xl border border-slate-200 bg-white px-3.5 py-2 text-sm font-semibold text-slate-500 transition hover:border-slate-300 hover:text-slate-700">
+          &larr; Dib u noqo
+        </button>
+        <div id="progressWrap" class="hidden rounded-2xl border border-emerald-100 bg-emerald-50 px-4 py-2.5 text-center">
+          <div class="text-[10px] font-bold uppercase tracking-wider text-emerald-600/70">Horumar</div>
+          <div id="progressText" class="num text-lg font-extrabold text-emerald-700">0 / 6</div>
+        </div>
+      </div>
+    </div>
+
+    <div id="slotGrid" class="mt-6 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3"></div>
+
+    <div class="mt-6 flex flex-col gap-3 sm:flex-row">
+      <button id="btnStartDraw" type="button"
+        class="flex-1 rounded-2xl bg-gradient-to-r from-emerald-500 via-emerald-600 to-teal-600 px-6 py-4 text-base font-extrabold text-white shadow-lift transition hover:-translate-y-0.5 active:translate-y-0">
+        &#127922; Bilow Baqti Nasiibka
+      </button>
+      <button id="btnSkip" type="button"
+        class="hidden rounded-2xl border-2 border-slate-200 bg-white px-6 py-4 text-base font-bold text-slate-600 transition hover:border-slate-300 hover:bg-slate-50 sm:w-40">
+        &#9193; Dhaqso
+      </button>
+    </div>
+    <p class="mt-3 text-center text-[12.5px] text-slate-400">
+      Natiijada waa la xisaabiyay oo la keydiyay isla markii la bilaabo &mdash; muuqaalku waa muujin uun.
+    </p>
+  </section>
+
+  <!-- ================= STEP 3 — RESULT ================= -->
+  <section id="screen-result" class="mt-6 hidden">
+
+    <div id="resultCard" class="overflow-hidden rounded-[28px] border border-slate-100 bg-white shadow-soft">
+      <div class="relative overflow-hidden border-b border-emerald-100 bg-gradient-to-br from-emerald-50 via-white to-sky-50 px-6 py-6 sm:px-8">
+        <div class="pitch-lines pointer-events-none absolute inset-0 opacity-50"></div>
+        <div class="relative flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <div class="inline-flex items-center gap-2 rounded-full bg-white/80 px-3 py-1 text-[11px] font-bold uppercase tracking-wider text-emerald-700 ring-1 ring-emerald-200">
+              <span>&#9917;</span> Natiijada rasmiga ah
+            </div>
+            <h2 class="mt-2 text-2xl font-extrabold tracking-tight text-slate-900 sm:text-3xl">Baqti Nasiibka Fadhiga</h2>
+            <p id="resultDate" class="mt-1 text-sm font-semibold text-slate-500">&mdash;</p>
+          </div>
+          <div class="rounded-2xl bg-white px-4 py-3 text-center shadow-sm ring-1 ring-slate-100">
+            <div class="num text-2xl font-extrabold text-slate-900">16</div>
+            <div class="text-[10px] font-bold uppercase tracking-wider text-slate-400">Kooxda</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid gap-6 p-6 sm:p-8 lg:grid-cols-2">
+        <div>
+          <div class="mb-3 flex items-center justify-between">
+            <h3 class="flex items-center gap-2 text-base font-extrabold text-slate-900">
+              <span class="grid h-7 w-7 place-items-center rounded-lg bg-amber-100 text-sm">&#129681;</span>
+              Fadhiga maanta
+            </h3>
+            <span id="sitCount" class="num rounded-full bg-amber-100 px-2.5 py-0.5 text-xs font-extrabold text-amber-700">6</span>
+          </div>
+          <ul id="listSitters" class="space-y-2"></ul>
+        </div>
+
+        <div>
+          <div class="mb-3 flex items-center justify-between">
+            <h3 class="flex items-center gap-2 text-base font-extrabold text-slate-900">
+              <span class="grid h-7 w-7 place-items-center rounded-lg bg-emerald-100 text-sm">&#9917;</span>
+              Ciyaaraya maanta
+            </h3>
+            <span id="playCount" class="num rounded-full bg-emerald-100 px-2.5 py-0.5 text-xs font-extrabold text-emerald-700">10</span>
+          </div>
+          <ul id="listPlayers" class="space-y-2"></ul>
+        </div>
+      </div>
+
+      <div class="border-t border-slate-100 bg-slate-50/70 px-6 py-4 text-center text-[12px] font-semibold text-slate-400 sm:px-8">
+        Baqti Nasiib &middot; Caddaalad iyo kalsooni &mdash; hal baqti nasiib maalintii.
+      </div>
+    </div>
+
+    <div class="no-print mt-4 flex flex-col gap-3 sm:flex-row">
+      <button id="btnPdf" type="button"
+        class="flex-1 rounded-2xl bg-gradient-to-r from-sky-500 to-sky-600 px-6 py-4 text-base font-extrabold text-white shadow-lift transition hover:-translate-y-0.5 active:translate-y-0">
+        &#128196; Soo deji PDF
+      </button>
+      <button id="btnAgain" type="button"
+        class="rounded-2xl border-2 border-slate-200 bg-white px-6 py-4 text-base font-bold text-slate-600 transition hover:border-slate-300 hover:bg-slate-50 sm:w-56">
+        &#128274; Baqti nasiib cusub
+      </button>
+    </div>
+  </section>
+
+  <!-- ================= ADMIN ================= -->
+  <section class="no-print mt-6 rounded-[28px] border border-slate-100 bg-white shadow-soft">
+    <button id="adminToggle" type="button" class="flex w-full items-center justify-between gap-3 px-6 py-5 text-left sm:px-8">
+      <span class="flex items-center gap-3">
+        <span class="grid h-9 w-9 place-items-center rounded-xl bg-slate-100 text-base">&#9881;&#65039;</span>
+        <span>
+          <span class="block text-base font-extrabold text-slate-900">Maamul</span>
+          <span class="block text-[13px] text-slate-500">Dib u dejin &mdash; khaladaad dhab ah oo keliya</span>
+        </span>
+      </span>
+      <span id="adminChevron" class="text-slate-400 transition-transform">&#9660;</span>
+    </button>
+
+    <div id="adminBody" class="hidden border-t border-slate-100 px-6 py-5 sm:px-8">
+      <div class="rounded-2xl border-2 border-rose-100 bg-rose-50/60 p-4">
+        <p class="text-[13.5px] font-semibold leading-relaxed text-rose-700">
+          Leader ayaad tahay &mdash; ha khiyaamayn dadka aad hogaaminayso. Tirtiridda waxaa loogu talagalay
+          khalad dhab ah oo keliya.
+        </p>
+      </div>
+      <label class="mt-4 block text-[13px] font-bold text-slate-500" for="resetInput">
+        Si aad u furto batoonka, qor <span class="rounded bg-slate-100 px-1.5 py-0.5 font-extrabold text-slate-700">TIRTIR</span>
+      </label>
+      <div class="mt-2 flex flex-col gap-2.5 sm:flex-row">
+        <input id="resetInput" type="text" autocomplete="off" spellcheck="false" placeholder="TIRTIR"
+          class="flex-1 rounded-xl border-2 border-slate-200 bg-white px-4 py-3 text-base font-bold tracking-wider text-slate-800 outline-none transition placeholder:font-medium placeholder:tracking-normal placeholder:text-slate-300 focus:border-rose-300 focus:ring-4 focus:ring-rose-100" />
+        <button id="btnReset" type="button" disabled
+          class="rounded-xl bg-rose-500 px-6 py-3 text-base font-extrabold text-white transition enabled:hover:bg-rose-600 disabled:cursor-not-allowed disabled:bg-slate-200 disabled:text-slate-400 sm:w-52">
+          Tirtir baqti nasiibka
+        </button>
+      </div>
+      <p id="storageNote" class="mt-3 hidden text-[12.5px] font-semibold text-amber-600"></p>
+    </div>
+  </section>
+
+  <p class="no-print mt-8 text-center text-[12px] text-slate-400">
+    Hal baqti nasiib maalintii &middot; keyd maxalli ah (localStorage) &middot; ma jiro server
+  </p>
+</div>
+
+<!-- toast -->
+<div id="toast" class="pointer-events-none fixed bottom-6 left-1/2 z-[80] hidden w-[calc(100%-2rem)] max-w-md -translate-x-1/2">
+  <div id="toastBox" class="rounded-2xl border-2 border-amber-200 bg-white p-4 shadow-2xl shadow-slate-300/50">
+    <div class="flex gap-3">
+      <span id="toastIcon" class="text-xl leading-none">&#128274;</span>
+      <p id="toastText" class="text-[13.5px] font-semibold leading-relaxed text-slate-700"></p>
+    </div>
+  </div>
+</div>
+
+<script>
+(function () {
+  'use strict';
+
+  /* ---------------- Kooxda & joogtayaal ---------------- */
+  var SQUAD = [
+    'Sahal', 'Caamir', 'Saalim', 'Xeeseey',
+    'Abdimalik', 'Aashito', 'Tonni', 'Salmaan Abdikarim',
+    'Luqman', 'Abdalle', 'Yonka', 'Suhayb',
+    'Maskiinow', 'Osman', 'Kaabsool', 'Ciilow'
+  ];
+  var TOTAL_SIT = 6;
+  var STORE_KEY = 'baqtiNasiib.v1';
+  var LOCK_MSG = 'Leader ayaad tahay — ha khiyaamayn dadka aad hogaaminayso. Baqti nasiibka maanta mar horaa la sameeyay.';
+
+  var SO_DAYS = ['Axad', 'Isniin', 'Talaado', 'Arbaco', 'Khamiis', 'Jimce', 'Sabti'];
+  var SO_MONTHS = ['Jannaayo', 'Febraayo', 'Maarso', 'Abriil', 'May', 'Juun',
+                   'Luuliyo', 'Agoosto', 'Sebtembar', 'Oktoobar', 'Nofembar', 'Diseembar'];
+
+  /* ---------------- Xaalad ---------------- */
+  var state = { volunteers: [], protectedPlayers: [], pool: [], drawn: [], sitters: [], players: [], date: null };
+  var pendingVolunteers = [];   // doorashada ka hor inta aan la xirin
+  var pendingProtected = [];    // kuwa baqtigii hore ku dhacay — waa la ilaalinayaa
+  var revealed = 0;        // imisa magac oo la muujiyay
+  var skipRequested = false;
+  var animating = false;
+  var timers = [];
+  var storageOK = true;
+
+  /* ---------------- Caawimaad ---------------- */
+  function $(id) { return document.getElementById(id); }
+
+  function todayKey() {
+    var d = new Date();
+    var m = String(d.getMonth() + 1);
+    var day = String(d.getDate());
+    if (m.length < 2) m = '0' + m;
+    if (day.length < 2) day = '0' + day;
+    return d.getFullYear() + '-' + m + '-' + day;
+  }
+
+  function somaliDate(key) {
+    var d;
+    if (key) {
+      var p = key.split('-');
+      d = new Date(Number(p[0]), Number(p[1]) - 1, Number(p[2]));
+    } else {
+      d = new Date();
+    }
+    return SO_DAYS[d.getDay()] + ', ' + d.getDate() + ' ' + SO_MONTHS[d.getMonth()] + ' ' + d.getFullYear();
+  }
+
+  function randInt(max) {
+    if (window.crypto && window.crypto.getRandomValues && max > 0) {
+      var limit = Math.floor(4294967296 / max) * max;
+      var arr = new Uint32Array(1);
+      var v;
+      do { window.crypto.getRandomValues(arr); v = arr[0]; } while (v >= limit);
+      return v % max;
+    }
+    return Math.floor(Math.random() * max);
+  }
+
+  function shuffled(list) {
+    var a = list.slice();
+    for (var i = a.length - 1; i > 0; i--) {
+      var j = randInt(i + 1);
+      var t = a[i]; a[i] = a[j]; a[j] = t;
+    }
+    return a;
+  }
+
+  function squadOrder(list) {
+    var set = {};
+    for (var i = 0; i < list.length; i++) set[list[i]] = true;
+    var out = [];
+    for (var k = 0; k < SQUAD.length; k++) if (set[SQUAD[k]]) out.push(SQUAD[k]);
+    return out;
+  }
+
+  function clearTimers() {
+    for (var i = 0; i < timers.length; i++) { clearTimeout(timers[i]); clearInterval(timers[i]); }
+    timers = [];
+  }
+
+  function later(fn, ms) { var t = setTimeout(fn, ms); timers.push(t); return t; }
+
+  /* ---------------- Keydka ---------------- */
+  function save() {
+    try {
+      localStorage.setItem(STORE_KEY, JSON.stringify(state));
+    } catch (e) {
+      storageOK = false;
+      var note = $('storageNote');
+      note.textContent = 'Digniin: keydka browser-ku ma shaqaynayo — xiritaanka maalinlaha ah ma sii jiri doono marka bogga la cusboonaysiiyo.';
+      note.classList.remove('hidden');
+    }
+  }
+
+  function load() {
+    try {
+      var raw = localStorage.getItem(STORE_KEY);
+      if (!raw) return null;
+      var obj = JSON.parse(raw);
+      if (!obj || obj.date !== todayKey()) return null;
+      if (!obj.sitters || !obj.players) return null;
+      return obj;
+    } catch (e) {
+      storageOK = false;
+      return null;
+    }
+  }
+
+  function wipe() {
+    try { localStorage.removeItem(STORE_KEY); } catch (e) { /* iska daa */ }
+  }
+
+  /* ---------------- Muuqaal / toast ---------------- */
+  var SCREENS = ['screen-start', 'screen-volunteers', 'screen-protected-q', 'screen-protected',
+                 'screen-draw', 'screen-result'];
+
+  function show(id) {
+    for (var i = 0; i < SCREENS.length; i++) {
+      var el = $(SCREENS[i]);
+      if (SCREENS[i] === id) {
+        el.classList.remove('hidden');
+        el.classList.remove('rise');
+        void el.offsetWidth;
+        el.classList.add('rise');
+      } else {
+        el.classList.add('hidden');
+      }
+    }
+  }
+
+  var toastTimer = null;
+  function toast(msg, icon, tone) {
+    var wrap = $('toast');
+    var box = $('toastBox');
+    $('toastText').textContent = msg;
+    $('toastIcon').innerHTML = icon || '&#128274;';
+    box.className = 'rounded-2xl border-2 bg-white p-4 shadow-2xl shadow-slate-300/50 ' +
+      (tone === 'rose' ? 'border-rose-200' : tone === 'emerald' ? 'border-emerald-200' : 'border-amber-200');
+    wrap.classList.remove('hidden');
+    wrap.classList.remove('toast-in');
+    void wrap.offsetWidth;
+    wrap.classList.add('toast-in');
+    if (toastTimer) clearTimeout(toastTimer);
+    toastTimer = setTimeout(function () { wrap.classList.add('hidden'); }, 6000);
+  }
+
+  function confetti() {
+    if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    var colors = ['#10b981', '#34d399', '#0ea5e9', '#38bdf8', '#f59e0b', '#fbbf24', '#a78bfa'];
+    for (var i = 0; i < 48; i++) {
+      var bit = document.createElement('div');
+      bit.className = 'confetti-bit';
+      bit.style.left = (Math.random() * 100) + 'vw';
+      bit.style.background = colors[Math.floor(Math.random() * colors.length)];
+      bit.style.setProperty('--dx', (Math.random() * 200 - 100) + 'px');
+      bit.style.setProperty('--rot', (Math.random() * 900 - 300) + 'deg');
+      bit.style.animationDuration = (2.1 + Math.random() * 1.5) + 's';
+      bit.style.animationDelay = (Math.random() * 0.35) + 's';
+      if (Math.random() > 0.6) bit.style.borderRadius = '50%';
+      document.body.appendChild(bit);
+      (function (node) { setTimeout(function () { if (node.parentNode) node.parentNode.removeChild(node); }, 4200); })(bit);
+    }
+  }
+
+  /* ---------------- Tallaabo 1b: liiska ikhtiyaariga ---------------- */
+  function buildChipGrid(gridId, hoverTone, onChange) {
+    var grid = $(gridId);
+    grid.innerHTML = '';
+    for (var i = 0; i < SQUAD.length; i++) {
+      var name = SQUAD[i];
+      var label = document.createElement('label');
+      label.className = 'relative block cursor-pointer';
+      label.innerHTML =
+        '<input type="checkbox" class="chip-input peer sr-only" value="' + name + '" />' +
+        '<span class="chip-body flex items-center gap-2.5 rounded-2xl border-2 border-slate-200 bg-white px-3 py-3 transition ' + hoverTone + '">' +
+          '<span class="chip-dot grid h-5 w-5 shrink-0 place-items-center rounded-md border-2 border-slate-300 bg-white transition">' +
+            '<svg viewBox="0 0 20 20" fill="none" class="h-3 w-3 opacity-0 scale-50 transition" style="transition:.15s">' +
+              '<path d="M4 10.5l4 4 8-9" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>' +
+            '</svg>' +
+          '</span>' +
+          '<span class="min-w-0 flex-1 text-[13.5px] font-bold leading-tight text-slate-700">' + name + '</span>' +
+          '<span class="chip-lock hidden shrink-0 text-[11px] leading-none text-slate-400" title="Liiska kale ayuu ku jiraa">&#128274;</span>' +
+        '</span>';
+      grid.appendChild(label);
+    }
+    grid.addEventListener('change', onChange);
+  }
+
+  function checkedIn(gridId) {
+    var boxes = $(gridId).querySelectorAll('input.chip-input');
+    var out = [];
+    for (var i = 0; i < boxes.length; i++) if (boxes[i].checked) out.push(boxes[i].value);
+    return out;
+  }
+
+  function selectedVolunteers() { return checkedIn('volGrid'); }
+  function selectedProtected() { return checkedIn('protGrid'); }
+
+  // Hal ciyaartoy labada liis kuma jiri karo: kuwa liiska kale lagu doortay waa la damiyaa.
+  function applyExclusions(targetGridId, blockedNames) {
+    var boxes = $(targetGridId).querySelectorAll('input.chip-input');
+    var blockedAny = false;
+    for (var i = 0; i < boxes.length; i++) {
+      var blocked = blockedNames.indexOf(boxes[i].value) !== -1;
+      if (blocked && boxes[i].checked) boxes[i].checked = false;
+      boxes[i].disabled = blocked;
+      if (blocked) blockedAny = true;
+    }
+    return blockedAny;
+  }
+
+  function updateMath() {
+    var vols = selectedVolunteers();
+    var n = vols.length;
+    var p = selectedProtected().length;
+    var drawCount = Math.max(0, TOTAL_SIT - n);
+    var playing = SQUAD.length - n;          // inta ciyaaraysa (kuwa la ilaaliyay way ku jiraan)
+    var pool = SQUAD.length - n - p;         // inta baqti nasiibka ku jirta
+
+    $('mathVol').textContent = n;
+    $('mathDraw').textContent = drawCount;
+    $('mathPool').textContent = pool;
+    $('mathLine').textContent = p > 0
+      ? 'Fadhiistay iskood: ' + n + ' · La ilaaliyay: ' + p + ' · Baqti laga qaadayaa: ' + drawCount +
+        ' · Ku jira qorshaha: ' + pool
+      : 'Fadhiistay iskood: ' + n + ' · Baqti nasiib laga qaadayaa: ' + drawCount + ' · Ku jira qorshaha: ' + pool;
+
+    var warn = $('volWarn');
+    var exact = $('volExact');
+    var confirmBox = $('volConfirm');
+    var btn = $('btnVolNext');
+
+    exact.classList.add('hidden');
+    warn.classList.add('hidden');
+
+    if (n > TOTAL_SIT) {
+      $('volWarnText').textContent =
+        'Waxaa iskood u fadhiistay ' + n + ' ciyaartoy — taasi waxay ka dhigan tahay in ay ciyaaraan ' +
+        playing + ' oo keliya, taasoo ka yar 10-ka caadiga ah. Haddii aad hubto, xaqiiji hoos.';
+      warn.classList.remove('hidden');
+      btn.textContent = 'Sii wad iyadoo la og yahay';
+      btn.disabled = !confirmBox.checked;
+    } else if (n === TOTAL_SIT) {
+      exact.classList.remove('hidden');
+      confirmBox.checked = false;
+      btn.textContent = 'Muuji natiijada';
+      btn.disabled = false;
+    } else {
+      confirmBox.checked = false;
+      btn.textContent = n === 0
+        ? 'Sii wad — 6 baa la saarayaa'
+        : 'Sii wad — ' + drawCount + ' baa la saarayaa';
+      btn.disabled = false;
+    }
+  }
+
+  /* ---------------- Tallaabo 1d: kuwa la ilaalinayo ---------------- */
+  function updateProtMath() {
+    var n = pendingVolunteers.length;             // iskood u fadhiistay (horey loo go'aamiyay)
+    var p = selectedProtected().length;           // la ilaaliyay
+    var drawCount = Math.max(0, TOTAL_SIT - n);   // inta baqti laga qaadayo
+    var pool = SQUAD.length - n - p;              // inta qorshaha ku jirta
+
+    $('pMathVol').textContent = n;
+    $('pMathProt').textContent = p;
+    $('pMathDraw').textContent = drawCount;
+    $('pMathPool').textContent = pool;
+    $('pMathLine').textContent =
+      'Fadhiistay iskood: ' + n + ' · La ilaaliyay: ' + p + ' · Baqti laga qaadayaa: ' + drawCount +
+      ' · Ku jira qorshaha: ' + pool;
+
+    var warn = $('protWarn');
+    var exact = $('protExact');
+    var btn = $('btnProtNext');
+    warn.classList.add('hidden');
+    exact.classList.add('hidden');
+
+    if (drawCount > pool) {
+      // Qorshaha kama filna inta la saarayo — baqti nasiibku ma dhici karo.
+      $('protWarnText').textContent =
+        'Waxaa la saarayaa ' + drawCount + ' ciyaartoy, laakiin qorshaha waxaa ku jira ' + pool +
+        ' oo keliya (16 − ' + n + ' iskood u fadhiistay − ' + p + ' la ilaaliyay = ' + pool + '). ' +
+        'Fadlan yaree tirada la ilaalinayo ugu yaraan ' + (drawCount - pool) + ' qof.';
+      warn.classList.remove('hidden');
+      btn.textContent = 'Ma sii socon karo';
+      btn.disabled = true;
+    } else if (drawCount === 0) {
+      exact.classList.remove('hidden');
+      btn.textContent = 'Muuji natiijada';
+      btn.disabled = false;
+    } else {
+      btn.textContent = 'Sii wad — ' + drawCount + ' baa la saarayaa';
+      btn.disabled = false;
+    }
+  }
+
+  /* ---------------- Tallaabo 2: baqti nasiibka ---------------- */
+  function slotCardHTML(index, kind, name) {
+    // kind: 'vol' | 'pending'
+    var isVol = kind === 'vol';
+    var tone = isVol
+      ? 'border-amber-200 bg-gradient-to-br from-amber-50 to-white'
+      : 'border-slate-200 bg-slate-50/70 border-dashed';
+    var badge = isVol
+      ? '<span class="grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-amber-400 text-sm font-extrabold text-white">' + index + '</span>'
+      : '<span class="num grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-white text-sm font-extrabold text-slate-400 ring-1 ring-slate-200">' + index + '</span>';
+    var body = isVol
+      ? '<span class="block text-[15px] font-extrabold leading-tight text-slate-900">' + name + '</span>' +
+        '<span class="mt-0.5 block text-[11.5px] font-bold uppercase tracking-wide text-amber-600">Iskiis u fadhiistay</span>'
+      : '<span class="slot-name block text-[15px] font-extrabold leading-tight text-slate-300">—</span>' +
+        '<span class="slot-tag mt-0.5 block text-[11.5px] font-bold uppercase tracking-wide text-slate-300">Sugaya</span>';
+    return '<div class="slot flex items-center gap-3 rounded-2xl border-2 p-3.5 transition ' + tone + '" data-kind="' + kind + '">' +
+           badge + '<span class="min-w-0 flex-1">' + body + '</span></div>';
+  }
+
+  function buildSlots() {
+    var grid = $('slotGrid');
+    var html = '';
+    var idx = 1;
+    for (var v = 0; v < pendingVolunteers.length && idx <= TOTAL_SIT; v++, idx++) {
+      html += slotCardHTML(idx, 'vol', pendingVolunteers[v]);
+    }
+    for (; idx <= TOTAL_SIT; idx++) {
+      html += slotCardHTML(idx, 'pending', '');
+    }
+    grid.innerHTML = html;
+  }
+
+  function pendingSlots() {
+    return $('slotGrid').querySelectorAll('.slot[data-kind="pending"]');
+  }
+
+  function setProgress() {
+    var total = state.drawn.length;
+    $('progressText').textContent = revealed + ' / ' + total;
+  }
+
+  function fillSlot(slotEl, name) {
+    slotEl.classList.remove('rolling', 'border-dashed', 'border-slate-200', 'bg-slate-50/70');
+    slotEl.classList.add('border-emerald-200', 'bg-gradient-to-br', 'from-emerald-50', 'to-white', 'pop', 'ring-burst');
+    var num = slotEl.querySelector('span');
+    num.className = 'num grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-emerald-500 text-sm font-extrabold text-white';
+    var nameEl = slotEl.querySelector('.slot-name');
+    var tagEl = slotEl.querySelector('.slot-tag');
+    nameEl.textContent = name;
+    nameEl.className = 'slot-name block text-[15px] font-extrabold leading-tight text-slate-900';
+    tagEl.textContent = 'Baqti nasiib';
+    tagEl.className = 'slot-tag mt-0.5 block text-[11.5px] font-bold uppercase tracking-wide text-emerald-600';
+  }
+
+  function startDraw() {
+    if (animating) return;
+
+    // Xiritaanka caddaaladda: haddii maanta horey loo sameeyay, wax cusub lama sameeyo.
+    var existing = load();
+    if (existing) {
+      state = existing;
+      toast(LOCK_MSG, '&#128274;', 'amber');
+      renderResult();
+      show('screen-result');
+      return;
+    }
+
+    // Difaac: qorshuhu waa inuu ka weyn yahay ama le'eg yahay inta la saarayo.
+    var need = TOTAL_SIT - pendingVolunteers.length;
+    var poolSize = SQUAD.length - pendingVolunteers.length - pendingProtected.length;
+    if (need > poolSize) {
+      toast('Baqti nasiibku ma dhici karo: waxaa la saarayaa ' + need + ' laakiin qorshaha waxaa ku jira ' +
+            poolSize + ' oo keliya. Yaree tirada la ilaalinayo.', '&#9888;&#65039;', 'rose');
+      show('screen-protected');
+      updateProtMath();
+      return;
+    }
+
+    // Natiijada isla markiiba waa la xisaabiyaa waana la keydiyaa — muuqaalku waa muujin uun.
+    computeAndSave(pendingVolunteers, pendingProtected);
+    buildSlots();
+
+    animating = true;
+    skipRequested = false;
+    revealed = 0;
+
+    $('btnStartDraw').classList.add('hidden');
+    $('btnBackDraw').classList.add('hidden');
+    $('btnSkip').classList.remove('hidden');
+    $('progressWrap').classList.remove('hidden');
+    setProgress();
+
+    revealNext();
+  }
+
+  function revealNext() {
+    if (skipRequested) return;
+    if (revealed >= state.drawn.length) { finishDraw(); return; }
+
+    var slots = pendingSlots();
+    var slot = slots[revealed];
+    var name = state.drawn[revealed];
+
+    // musharraxiinta hadhay (kuwa aan weli la muujin)
+    var candidates = [];
+    for (var i = 0; i < state.pool.length; i++) {
+      var c = state.pool[i];
+      if (state.drawn.slice(0, revealed).indexOf(c) === -1) candidates.push(c);
+    }
+    if (candidates.length === 0) candidates = [name];
+
+    var nameEl = slot.querySelector('.slot-name');
+    var tagEl = slot.querySelector('.slot-tag');
+    slot.classList.add('rolling', 'border-emerald-200');
+    slot.classList.remove('border-dashed');
+    nameEl.className = 'slot-name block text-[15px] font-extrabold leading-tight text-emerald-500/70';
+    tagEl.textContent = 'Wareegaya…';
+    tagEl.className = 'slot-tag mt-0.5 block text-[11.5px] font-bold uppercase tracking-wide text-emerald-400';
+
+    var spin = setInterval(function () {
+      nameEl.textContent = candidates[Math.floor(Math.random() * candidates.length)];
+    }, 65);
+    timers.push(spin);
+
+    later(function () {
+      clearInterval(spin);
+      if (skipRequested) return;
+      fillSlot(slot, name);
+      revealed++;
+      setProgress();
+      later(revealNext, 800);
+    }, 720);
+  }
+
+  function skipDraw() {
+    if (!animating || skipRequested) return;
+    skipRequested = true;
+    clearTimers();
+    var slots = pendingSlots();
+    for (var i = revealed; i < state.drawn.length; i++) {
+      if (slots[i]) fillSlot(slots[i], state.drawn[i]);
+    }
+    revealed = state.drawn.length;
+    setProgress();
+    setTimeout(finishDraw, 320);
+  }
+
+  function finishDraw() {
+    animating = false;
+    clearTimers();
+    $('btnSkip').classList.add('hidden');
+    renderResult();
+    show('screen-result');
+    $('screen-result').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    confetti();
+  }
+
+  /* ---------------- Natiijada ---------------- */
+  function rowHTML(index, name, tag, tone, tagToneOverride) {
+    var badgeTone = tone === 'amber'
+      ? 'bg-amber-400 text-white'
+      : tone === 'emerald' ? 'bg-emerald-500 text-white'
+      : 'bg-sky-500 text-white';
+    var tagTone = tagToneOverride || (tone === 'amber'
+      ? 'bg-amber-100 text-amber-700'
+      : tone === 'emerald' ? 'bg-emerald-100 text-emerald-700'
+      : 'bg-sky-100 text-sky-700');
+    // Calaamadaha dhaadheer si fiican uma akhriyi karaan iyagoo waaweyn — sidaas darteed caadi ahaan
+    var tagCase = tag && tag.length > 18 ? 'normal-case tracking-normal' : 'uppercase tracking-wide';
+    var border = 'border-slate-100 bg-white';
+    return '<li class="flex flex-wrap items-center gap-x-3 gap-y-1 rounded-2xl border ' + border + ' px-3 py-2.5">' +
+      '<span class="num grid h-7 w-7 shrink-0 place-items-center rounded-lg text-[12px] font-extrabold ' + badgeTone + '">' + index + '</span>' +
+      '<span class="min-w-0 flex-1 text-[14.5px] font-bold leading-tight text-slate-800">' + name + '</span>' +
+      (tag ? '<span class="shrink-0 rounded-full px-2 py-0.5 text-[10.5px] font-extrabold ' + tagCase + ' ' + tagTone + '">' + tag + '</span>' : '') +
+      '</li>';
+  }
+
+  function renderResult() {
+    $('resultDate').textContent = somaliDate(state.date);
+    $('headerDate').textContent = somaliDate(state.date);
+    $('lockPill').classList.remove('hidden');
+    $('lockPill').classList.add('flex');
+
+    var sitters = state.sitters;
+    var players = state.players;
+
+    var sHtml = '';
+    for (var i = 0; i < sitters.length; i++) {
+      var isVol = state.volunteers.indexOf(sitters[i]) !== -1;
+      sHtml += rowHTML(i + 1, sitters[i], isVol ? 'Iskiis u fadhiistay' : 'Baqti nasiib', isVol ? 'amber' : 'emerald');
+    }
+    $('listSitters').innerHTML = sHtml;
+    $('sitCount').textContent = sitters.length;
+
+    var prot = state.protectedPlayers || [];
+    var pHtml = '';
+    for (var j = 0; j < players.length; j++) {
+      var isProt = prot.indexOf(players[j]) !== -1;
+      pHtml += rowHTML(j + 1, players[j],
+        isProt ? 'La ilaaliyay – baqtigii hore ayuu ku dhacay' : '',
+        'sky',
+        isProt ? 'bg-indigo-100 text-indigo-700' : null);
+    }
+    $('listPlayers').innerHTML = pHtml;
+    $('playCount').textContent = players.length;
+
+    var sitHeads = $('screen-result').querySelectorAll('h3');
+    if (sitHeads.length === 2) {
+      sitHeads[0].lastChild.textContent = ' Fadhiga maanta (' + sitters.length + ')';
+      sitHeads[1].lastChild.textContent = ' Ciyaaraya maanta (' + players.length + ')';
+    }
+  }
+
+  /* ---------------- Xisaabinta natiijada ---------------- */
+  function computeAndSave(volunteers, protectedList) {
+    var vols = squadOrder(volunteers);
+    var prot = squadOrder(protectedList || []);
+
+    // Kuwa la ilaaliyay gebi ahaanba qorshaha kama mid aha — way ciyaarayaan.
+    var pool = [];
+    for (var i = 0; i < SQUAD.length; i++) {
+      if (vols.indexOf(SQUAD[i]) === -1 && prot.indexOf(SQUAD[i]) === -1) pool.push(SQUAD[i]);
+    }
+
+    var need = Math.max(0, Math.min(TOTAL_SIT - vols.length, pool.length));
+    var drawn = shuffled(pool).slice(0, need);
+
+    var sittersSet = vols.concat(drawn);
+    var sitters = squadOrder(sittersSet);
+    var players = [];
+    for (var k = 0; k < SQUAD.length; k++) if (sittersSet.indexOf(SQUAD[k]) === -1) players.push(SQUAD[k]);
+
+    state = {
+      date: todayKey(),
+      volunteers: vols,
+      protectedPlayers: prot,
+      pool: pool,
+      drawn: drawn,
+      sitters: sitters,
+      players: players
+    };
+    save();               // isla markiiba la keydiyo — muuqaalku wax ma beddelayo
+  }
+
+  /* ---------------- PDF ---------------- */
+  function makePdf() {
+    if (!window.jspdf || !window.jspdf.jsPDF) {
+      toast('PDF-ka lama soo dejin karo — internet-ka hubi oo bogga dib u cusboonaysii.', '&#9888;&#65039;', 'rose');
+      return;
+    }
+    var jsPDF = window.jspdf.jsPDF;
+    var doc = new jsPDF({ unit: 'mm', format: 'a4', orientation: 'portrait' });
+
+    var W = 210, M = 14;
+    var dateStr = somaliDate(state.date);
+
+    // background
+    doc.setFillColor(255, 255, 255);
+    doc.rect(0, 0, 210, 297, 'F');
+
+    // header band
+    doc.setFillColor(240, 253, 244);
+    doc.roundedRect(M, 14, W - M * 2, 34, 4, 4, 'F');
+    doc.setDrawColor(167, 243, 208);
+    doc.setLineWidth(0.4);
+    doc.roundedRect(M, 14, W - M * 2, 34, 4, 4, 'S');
+
+    doc.setFillColor(16, 185, 129);
+    doc.roundedRect(M + 6, 20, 4, 22, 2, 2, 'F');
+
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(21);
+    doc.setTextColor(6, 78, 59);
+    doc.text('Baqti Nasiibka Fadhiga', M + 15, 30);
+
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(10.5);
+    doc.setTextColor(15, 118, 110);
+    doc.text(dateStr, M + 15, 38);
+
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(9);
+    doc.setTextColor(100, 116, 139);
+    doc.text('16 ciyaartoy', W - M - 8, 30, { align: 'right' });
+    doc.setFont('helvetica', 'normal');
+    doc.text(state.players.length + ' ciyaaraya / ' + state.sitters.length + ' fadhiya', W - M - 8, 37, { align: 'right' });
+
+    var colW = (W - M * 2 - 8) / 2;
+    var leftX = M, rightX = M + colW + 8;
+    var topY = 58;
+
+    function column(x, title, items, tone) {
+      var headFill = tone === 'amber' ? [254, 243, 199] : [209, 250, 229];
+      var headText = tone === 'amber' ? [146, 64, 14] : [6, 95, 70];
+      var rowH = 10.5;
+      var boxH = 14 + items.length * rowH + 4;
+
+      doc.setFillColor(255, 255, 255);
+      doc.setDrawColor(226, 232, 240);
+      doc.setLineWidth(0.4);
+      doc.roundedRect(x, topY, colW, boxH, 3, 3, 'FD');
+
+      doc.setFillColor(headFill[0], headFill[1], headFill[2]);
+      doc.roundedRect(x, topY, colW, 14, 3, 3, 'F');
+      doc.rect(x, topY + 10, colW, 4, 'F');
+
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(11);
+      doc.setTextColor(headText[0], headText[1], headText[2]);
+      doc.text(title, x + 5, topY + 9.4);
+
+      var y = topY + 14 + 7.5;
+      for (var i = 0; i < items.length; i++) {
+        var it = items[i];
+        if (i % 2 === 1) {
+          doc.setFillColor(248, 250, 252);
+          doc.rect(x + 1.5, y - 5.4, colW - 3, rowH - 1, 'F');
+        }
+        // number bubble
+        if (tone === 'amber') doc.setFillColor(245, 158, 11); else doc.setFillColor(16, 185, 129);
+        doc.circle(x + 7, y - 1.4, 3, 'F');
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(7.5);
+        doc.setTextColor(255, 255, 255);
+        doc.text(String(i + 1), x + 7, y - 0.1, { align: 'center' });
+
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(10.5);
+        doc.setTextColor(15, 23, 42);
+        doc.text(it.name, x + 13, y);
+
+        if (it.tag) {
+          doc.setFont('helvetica', 'normal');
+          doc.setFontSize(7.2);
+          if (it.tagTone === 'amber') doc.setTextColor(180, 83, 9);
+          else if (it.tagTone === 'indigo') doc.setTextColor(79, 70, 229);
+          else doc.setTextColor(4, 120, 87);
+          doc.text(it.tag, x + colW - 4, y, { align: 'right' });
+        }
+        y += rowH;
+      }
+      return topY + boxH;
+    }
+
+    var sitItems = [];
+    for (var i = 0; i < state.sitters.length; i++) {
+      var isVol = state.volunteers.indexOf(state.sitters[i]) !== -1;
+      sitItems.push({
+        name: state.sitters[i],
+        tag: isVol ? 'Iskiis u fadhiistay' : 'Baqti nasiib',
+        tagTone: isVol ? 'amber' : 'emerald'
+      });
+    }
+    var prot = state.protectedPlayers || [];
+    var playItems = [];
+    for (var j = 0; j < state.players.length; j++) {
+      var isProt = prot.indexOf(state.players[j]) !== -1;
+      playItems.push({
+        name: state.players[j],
+        tag: isProt ? 'La ilaaliyay' : '',
+        tagTone: isProt ? 'indigo' : 'emerald'
+      });
+    }
+
+    var b1 = column(leftX, 'Fadhiga maanta (' + state.sitters.length + ')', sitItems, 'amber');
+    var b2 = column(rightX, 'Ciyaaraya maanta (' + state.players.length + ')', playItems, 'emerald');
+
+    var footY = Math.max(b1, b2) + 14;
+    if (footY > 268) footY = 268;
+
+    doc.setDrawColor(226, 232, 240);
+    doc.setLineWidth(0.4);
+    doc.line(M, footY, W - M, footY);
+
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(9);
+    doc.setTextColor(100, 116, 139);
+    doc.text('Baqti Nasiib — caddaalad iyo kalsooni', M, footY + 7);
+    if (prot.length) {
+      doc.setFont('helvetica', 'normal');
+      doc.setFontSize(7.6);
+      doc.setTextColor(79, 70, 229);
+      doc.text('La ilaaliyay = baqtigii hore ayuu ku dhacay, sidaas darteed maanta wuu ciyaarayaa.', M, footY + 13);
+      doc.setFont('helvetica', 'bold');
+    }
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(8);
+    doc.setTextColor(148, 163, 184);
+    doc.text('Hal baqti nasiib maalintii · ' + dateStr, W - M, footY + 7, { align: 'right' });
+
+    doc.save('baqti-nasiib-' + state.date + '.pdf');
+  }
+
+  /* ---------------- Bilowga barnaamijka ---------------- */
+  /* ---------------- Socodka tallaabooyinka ---------------- */
+  function goToProtectedQuestion() {
+    applyExclusions('protGrid', pendingVolunteers);
+    updateProtMath();
+    show('screen-protected-q');
+  }
+
+  function goToDraw() {
+    var need = TOTAL_SIT - pendingVolunteers.length;
+    var poolSize = SQUAD.length - pendingVolunteers.length - pendingProtected.length;
+
+    if (!pendingVolunteers.length && !pendingProtected.length) {
+      $('drawSubtitle').textContent =
+        'Ma jiro cid iskeed u fadhiisatay — ' + TOTAL_SIT + ' ciyaartoy ayaa laga saarayaa 16-ka.';
+    } else {
+      var bits = [];
+      if (pendingVolunteers.length) bits.push(pendingVolunteers.length + ' ayaa iskood u fadhiistay');
+      if (pendingProtected.length) bits.push(pendingProtected.length + ' ayaa la ilaaliyay');
+      bits.push(need + ' ayaa baqti nasiib laga qaadayaa ' + poolSize + '-ka qorshaha ku jira');
+      $('drawSubtitle').textContent = bits.join(' · ') + '.';
+    }
+
+    buildSlots();
+    show('screen-draw');
+  }
+
+  function finishWithoutDraw() {
+    computeAndSave(pendingVolunteers, pendingProtected);
+    renderResult();
+    show('screen-result');
+    $('screen-result').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    confetti();
+  }
+
+  function storageAvailable() {
+    try {
+      localStorage.setItem('__bn_probe', '1');
+      localStorage.removeItem('__bn_probe');
+      return true;
+    } catch (e) {
+      return false;
+    }
+  }
+
+  function boot() {
+    $('headerDate').textContent = somaliDate(null);
+    buildChipGrid('volGrid', 'hover:border-amber-200 hover:bg-amber-50/40', updateMath);
+    buildChipGrid('protGrid', 'hover:border-indigo-200 hover:bg-indigo-50/40', updateProtMath);
+    updateMath();
+    updateProtMath();
+
+    if (!storageAvailable()) {
+      storageOK = false;
+      $('storageWarn').classList.remove('hidden');
+      var note = $('storageNote');
+      note.textContent = 'Digniin: keydka browser-ku ma shaqaynayo — xiritaanka maalinlaha ah ma sii jiri doono marka bogga la cusboonaysiiyo.';
+      note.classList.remove('hidden');
+    }
+
+    var saved = load();
+    if (saved) {
+      state = saved;
+      if (!state.pool) state.pool = [];
+      if (!state.drawn) state.drawn = [];
+      if (!state.protectedPlayers) state.protectedPlayers = [];   // keydad hore
+      renderResult();
+      show('screen-result');
+    } else {
+      show('screen-start');
+    }
+
+    /* --- Tallaabo 1 --- */
+    $('btnNo').addEventListener('click', function () {
+      if (load()) { toast(LOCK_MSG, '&#128274;', 'amber'); return; }
+      pendingVolunteers = [];
+      goToProtectedQuestion();
+    });
+
+    $('btnYes').addEventListener('click', function () {
+      if (load()) { toast(LOCK_MSG, '&#128274;', 'amber'); return; }
+      applyExclusions('volGrid', selectedProtected());
+      updateMath();
+      show('screen-volunteers');
+    });
+
+    $('btnBackStart').addEventListener('click', function () { show('screen-start'); });
+    $('volConfirm').addEventListener('change', updateMath);
+
+    $('btnVolNext').addEventListener('click', function () {
+      if (load()) { toast(LOCK_MSG, '&#128274;', 'amber'); return; }
+      pendingVolunteers = squadOrder(selectedVolunteers());
+
+      if (pendingVolunteers.length >= TOTAL_SIT) {
+        // 6 ama ka badan ayaa iskood u fadhiistay — baqti nasiib looma baahna,
+        // sidaas darteed su'aasha ilaalintu micno ma leh.
+        pendingProtected = [];
+        finishWithoutDraw();
+        return;
+      }
+      goToProtectedQuestion();
+    });
+
+    /* --- Tallaabo 1c/1d: kuwa la ilaalinayo --- */
+    $('btnProtNo').addEventListener('click', function () {
+      if (load()) { toast(LOCK_MSG, '&#128274;', 'amber'); return; }
+      pendingProtected = [];
+      goToDraw();
+    });
+
+    $('btnProtYes').addEventListener('click', function () {
+      if (load()) { toast(LOCK_MSG, '&#128274;', 'amber'); return; }
+      var blocked = applyExclusions('protGrid', pendingVolunteers);
+      $('protHint').classList.toggle('hidden', !blocked);
+      updateProtMath();
+      show('screen-protected');
+    });
+
+    $('btnBackProtQ').addEventListener('click', function () {
+      show(pendingVolunteers.length ? 'screen-volunteers' : 'screen-start');
+    });
+
+    $('btnBackProt').addEventListener('click', function () { show('screen-protected-q'); });
+
+    $('btnProtNext').addEventListener('click', function () {
+      if (load()) { toast(LOCK_MSG, '&#128274;', 'amber'); return; }
+      pendingProtected = squadOrder(selectedProtected());
+
+      var need = TOTAL_SIT - pendingVolunteers.length;
+      var poolSize = SQUAD.length - pendingVolunteers.length - pendingProtected.length;
+      if (need > poolSize) { updateProtMath(); return; }   // xannibaad — badhanku waa damman yahay
+
+      if (need <= 0) { finishWithoutDraw(); return; }
+      goToDraw();
+    });
+
+    /* --- Tallaabo 2 --- */
+    $('btnStartDraw').addEventListener('click', function () {
+      startDraw();
+    });
+    $('btnSkip').addEventListener('click', skipDraw);
+    $('btnBackDraw').addEventListener('click', function () {
+      if (animating) return;
+      show(pendingProtected.length ? 'screen-protected' : 'screen-protected-q');
+    });
+
+    /* --- Natiijada --- */
+    $('btnPdf').addEventListener('click', makePdf);
+    $('btnAgain').addEventListener('click', function () {
+      toast(LOCK_MSG, '&#128274;', 'amber');
+      $('adminBody').classList.remove('hidden');
+      $('adminChevron').style.transform = 'rotate(180deg)';
+    });
+
+    /* --- Maamul --- */
+    $('adminToggle').addEventListener('click', function () {
+      var body = $('adminBody');
+      var open = body.classList.contains('hidden');
+      body.classList.toggle('hidden');
+      $('adminChevron').style.transform = open ? 'rotate(180deg)' : 'rotate(0deg)';
+    });
+
+    $('resetInput').addEventListener('input', function () {
+      $('btnReset').disabled = this.value.trim() !== 'TIRTIR';
+    });
+
+    $('btnReset').addEventListener('click', function () {
+      if ($('resetInput').value.trim() !== 'TIRTIR') return;
+      clearTimers();
+      wipe();
+      state = { volunteers: [], protectedPlayers: [], pool: [], drawn: [], sitters: [], players: [], date: null };
+      pendingVolunteers = [];
+      pendingProtected = [];
+      revealed = 0; animating = false; skipRequested = false;
+
+      var boxes = $('volGrid').querySelectorAll('input.chip-input');
+      for (var i = 0; i < boxes.length; i++) { boxes[i].checked = false; boxes[i].disabled = false; }
+      var pBoxes = $('protGrid').querySelectorAll('input.chip-input');
+      for (var j = 0; j < pBoxes.length; j++) { pBoxes[j].checked = false; pBoxes[j].disabled = false; }
+      $('protHint').classList.add('hidden');
+      $('volConfirm').checked = false;
+      updateMath();
+      updateProtMath();
+
+      $('resetInput').value = '';
+      $('btnReset').disabled = true;
+      $('lockPill').classList.add('hidden');
+      $('lockPill').classList.remove('flex');
+      $('btnStartDraw').classList.remove('hidden');
+      $('btnBackDraw').classList.remove('hidden');
+      $('btnSkip').classList.add('hidden');
+      $('progressWrap').classList.add('hidden');
+      $('slotGrid').innerHTML = '';
+
+      show('screen-start');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      toast('Baqti nasiibkii maanta waa la tirtiray. Mid cusub ayaa la sameyn karaa.', '&#9989;', 'emerald');
+    });
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', boot);
+  } else {
+    boot();
+  }
+})();
+</script>
+</body>
+</html>
