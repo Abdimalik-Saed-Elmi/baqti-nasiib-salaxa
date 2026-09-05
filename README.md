@@ -1,37 +1,56 @@
 # Baqti Nasiib — Qaybta Fadhiga
 
 Web-app hal fayl ah oo si caddaalad ah u qaybisa **fadhiga maalinta ciyaarta**.
-Kooxdu waa 16 ciyaartoy, 10 ayaa ciyaaraya, 6-na way fadhiyaan — kuwaas oo lagu
-doorto baqti nasiib toos ah oo muuqaal qurux badan leh.
+16-ka ciyaartoy waxaa loo qaybiyaa **laba koox oo 8 ah**, koox kastaana waxay
+leedahay **baqti nasiib u gaar ah**: 3 way fadhiyaan, 5-na way ciyaarayaan.
 
-*A single-file web app that fairly picks which 6 of a 16-player squad sit out on
-matchday, through a live lottery draw. UI language: Somali.*
+*A single-file web app that fairly picks who sits out on matchday. The 16-player
+squad is split into two teams of 8; each team runs its own independent lottery
+(3 sit, 5 play). UI language: Somali.*
+
+**Tooska ah:** https://abdimalik-saed-elmi.github.io/baqti-nasiib-salaxa/
 
 ## Sida loo isticmaalo
 
-1. Fur `index.html` browser-ka (ama ka hoos maree server maxalli ah).
-2. **Tallaabo 1** — Ma jiraan ciyaartoy iskood u fadhiista? Haddii haa, dooro.
-3. **Tallaabo 1c** — Ma jiraan ciyaartoy baqtigii hore ku dhacay? Kuwaas waa la
-   ilaalinayaa: si toos ah ayay u galayaan 10-ka ciyaaraya, qorshahana kama mid aha.
-4. **Tallaabo 2** — Riix *Bilow Baqti Nasiibka*. Magacyada hal slot ayaa la muujiyaa.
-5. **Tallaabo 3** — Natiijada la wadaagi karo, iyo badhanka *Soo deji PDF*.
+1. **Tallaabo 1 — Kooxaha.** Qaybi 16-ka ciyaartoy Koox A iyo Koox B (8 + 8).
+   Qaybintu way keydsan tahay; markii dambe waxaad ka beddeli kartaa *Maamul →
+   Beddel kooxaha*.
+2. **Tallaabo 2 — Kuwa iskood u fadhiistay.** Koox kasta si gaar ah u jawaab.
+   Kuwa iskood u fadhiista waa laga jaraa 3-da fadhiga ee kooxdooda.
+3. **Tallaabo 3 — Ilaalinta.** Kuwa baqtigii hore ku dhacay waa la ilaalinayaa:
+   si toos ah ayay u galayaan 5-ta ciyaaraya, qorshahana kama mid aha.
+4. **Tallaabo 4 — Xafladda.** Riix *Bilow Baqti Nasiibka*. Koox A ayaa horeeya,
+   kadibna Koox B — hal magac mar.
+5. **Natiijada** — kaarka la wadaagi karo iyo badhanka *Soo deji PDF*.
+
+## Lambarrada soo-gelitaanka
+
+Koox kasta, kuwa **baqtiga ku dhacay** waxay helayaan lambar (1, 2, 3) sida
+tartiibkii loo saaray:
+
+> Haddii ciyaartoy ciyaaraya uu iskiis u fadhiisto, lambarka 1aad ayaa beddelaya
+> — baqti cusub looma baahna.
+
+Kuwa **iskood** u fadhiistay lambar ma helayaan (way doorteen inay fadhiistaan,
+safka soo-gelitaanka kuma jiraan).
 
 ## Xeerarka caddaaladda
 
 - **Hal baqti nasiib maalintii.** Marka la sameeyo, waa la xiray — cusboonaysiintu
   natiijada ma beddesho (`localStorage`).
-- Natiijada waa la xisaabiyaa waana la keydiyaa isla markii la bilaabo;
+- Natiijada labada koox waa la xisaabiyaa waana la keydiyaa isla markii la bilaabo;
   muuqaalku waa **muujin uun**, badhanka *Dhaqso*-na waxba kama beddelo.
-- Kuwa **iskood** u fadhiistay ilaalin ma helayaan — sida caadiga ah ayay qorshaha ugu jiraan.
-- Dib u dejin waxay u baahan tahay in la qoro `TIRTIR` — khaladaad dhab ah oo keliya.
+- Beddelidda kooxuhu **ma furto** baqti nasiibka maanta.
+- Dib u dejin waxay u baahan tahay in la qoro `TIRTIR` — khaladaad dhab ah oo
+  keliya. Dib u dejintu kooxaha ma tirtirto.
+- Hubinta koox kasta: haddii qorshuhu ka yar yahay inta la saarayo, baqtigaas waa
+  la joojiyaa oo digniin cad ayaa la muujiyaa.
 
 ## Farsamada
 
-Hal fayl: `index.html`. Ma jiro server, ma jiro database, ma jiro isku-xirnaan
-qalabyo kale. Tailwind CSS iyo jsPDF ayaa CDN laga soo qaadaa, sidaas darteed
-internet ayaa loo baahan yahay markii ugu horreysay.
+Hal fayl: `index.html`. Ma jiro server, ma jiro database. Tailwind CSS iyo jsPDF
+ayaa CDN laga soo qaadaa, sidaas darteed internet ayaa loo baahan yahay.
 
 > **Fiiro gaar ah:** haddii faylka si toos ah loo furo (`file://`), browser-ku
 > wuxuu xannibi karaa `localStorage` — taasoo ka dhigan in xiritaanka maalinlaha
-> ahi uusan shaqayn. App-ku digniin ayuu muujiyaa haddii ay taasi dhacdo; si loo
-> hubiyo, ka fur server maxalli ah ama internet.
+> ahi uusan shaqayn. Isticmaal linkiga tooska ah ee kor ku xusan.
