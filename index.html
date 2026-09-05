@@ -72,7 +72,7 @@
   .chip-input:checked + .chip-body .chip-dot { background: #f59e0b; border-color: #f59e0b; }
   .chip-input:checked + .chip-body .chip-dot svg { opacity: 1; transform: scale(1); }
   .chip-input:focus-visible + .chip-body { outline: 2px solid #0ea5e9; outline-offset: 2px; }
-  /* --- Chips: kuwa la ilaalinayo (indigo) --- */
+  /* --- Chips: kuwa jimcadi hore fadhiistay (indigo) --- */
   .prot-grid .chip-input:checked + .chip-body {
     border-color: #6366f1;
     background: linear-gradient(180deg, #eef2ff, #e0e7ff);
@@ -252,14 +252,15 @@
     <div class="flex flex-wrap items-start justify-between gap-3">
       <div>
         <div class="mb-3 inline-flex items-center gap-2 rounded-full bg-indigo-50 px-3 py-1 text-[11px] font-bold uppercase tracking-wider text-indigo-600">
-          Tallaabo 3 &middot; Ilaalinta
+          Tallaabo 3 &middot; Jimcadi hore
         </div>
         <h2 class="text-xl font-extrabold leading-snug text-slate-900 sm:text-2xl">
           Ma jiraan ciyaartoy baqti nasiibkii hore ku dhacay?
         </h2>
         <p class="mt-1 max-w-2xl text-[15px] text-slate-500">
-          Kuwaas waa la ilaalinayaa &mdash; si toos ah ayay u galayaan 5-ta ciyaaraya ee kooxdooda.
-          Kuwa <span class="font-semibold text-slate-700">iskood</span> u fadhiistay ilaalin ma helayaan.
+          Kuwa <span class="font-semibold text-slate-700">jimcadi hore fadhiistay</span> &mdash; si toos ah
+          ayay u galayaan 5-ta ciyaaraya ee kooxdooda, baqtigana kama mid noqonayaan.
+          Kuwa <span class="font-semibold text-slate-700">iskood</span> u fadhiistay tan ma helayaan.
         </p>
       </div>
       <button id="btnBackVol" type="button"
@@ -346,8 +347,8 @@
           <div>
             <div class="text-[13px] font-extrabold text-emerald-800">Lambarrada soo-gelitaanka</div>
             <p class="mt-1 text-[13px] leading-relaxed text-emerald-700">
-              Haddii ciyaartoy ciyaaraya uu iskiis u fadhiisto, lambarka 1aad ayaa beddelaya &mdash;
-              baqti cusub looma baahna.
+              Haddii ciyaartoy ciyaaraya uu maanta fadhiisto, lambarka 1aad ayaa beddelaya &mdash;
+              baqti nasiib cusub looma baahna.
             </p>
           </div>
         </div>
@@ -709,7 +710,7 @@
     }
   }
 
-  /* ================= Chips (iskood / la ilaaliyay) ================= */
+  /* ================= Chips (iskood / jimcadi hore) ================= */
   function chipHTML(name, hoverTone) {
     return '<label class="relative block cursor-pointer">' +
       '<input type="checkbox" class="chip-input peer sr-only" value="' + esc(name) + '" />' +
@@ -844,7 +845,7 @@
       warnText.className = 'warn-text text-[12.5px] font-semibold leading-relaxed text-rose-600';
       warnText.textContent =
         'Waxaa la saarayaa ' + mm.need + ' laakiin qorshaha waxaa ku jira ' + mm.pool + ' oo keliya (8 − ' +
-        mm.v + ' iskood u fadhiistay − ' + mm.p + ' Jimcadi hore Fadhiistay = ' + mm.pool + '). Fadlan yaree tirada la ilaalinayo ugu yaraan ' +
+        mm.v + ' iskood u fadhiistay − ' + mm.p + ' Jimcadi hore Fadhiistay = ' + mm.pool + '). Fadlan yaree tirada jimcadi hore fadhiistay ugu yaraan ' +
         (mm.need - mm.pool) + ' qof.';
       confirmBox.checked = false;
     } else if (mm.over) {
