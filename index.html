@@ -358,9 +358,17 @@
       </div>
     </div>
 
-    <div class="no-print mt-4 flex flex-col gap-3 sm:flex-row">
+    <div class="no-print mt-4 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
+      <button id="btnShare" type="button"
+        class="flex flex-1 items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-[#25D366] to-[#1EBE5B] px-6 py-4 text-base font-extrabold text-white shadow-lift transition hover:-translate-y-0.5 active:translate-y-0 sm:min-w-[220px]">
+        <svg viewBox="0 0 24 24" fill="currentColor" class="h-5 w-5" aria-hidden="true">
+          <path d="M17.47 14.38c-.3-.15-1.75-.86-2.02-.96-.27-.1-.47-.15-.67.15-.2.3-.77.96-.94 1.16-.17.2-.35.22-.64.08-.3-.15-1.25-.46-2.38-1.47-.88-.78-1.47-1.75-1.65-2.05-.17-.3-.02-.46.13-.6.13-.14.3-.35.45-.53.15-.18.2-.3.3-.5.1-.2.05-.38-.02-.53-.08-.15-.67-1.6-.92-2.2-.24-.58-.49-.5-.67-.51h-.57c-.2 0-.52.07-.8.37-.27.3-1.04 1.02-1.04 2.48s1.07 2.88 1.22 3.08c.15.2 2.1 3.2 5.07 4.49.71.3 1.26.49 1.69.63.71.22 1.36.19 1.87.12.57-.09 1.75-.72 2-1.41.25-.69.25-1.28.17-1.41-.07-.13-.27-.2-.57-.35z"/>
+          <path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.45 1.32 4.95L2 22l5.25-1.38a9.9 9.9 0 004.79 1.22h.01c5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.82 9.82 0 0012.04 2zm0 18.15h-.01a8.2 8.2 0 01-4.18-1.15l-.3-.18-3.11.82.83-3.04-.2-.31a8.16 8.16 0 01-1.25-4.38c0-4.54 3.7-8.23 8.24-8.23a8.2 8.2 0 015.82 2.42 8.17 8.17 0 012.41 5.82c0 4.54-3.7 8.23-8.25 8.23z"/>
+        </svg>
+        Ku wadaag WhatsApp
+      </button>
       <button id="btnPdf" type="button"
-        class="flex-1 rounded-2xl bg-gradient-to-r from-sky-500 to-sky-600 px-6 py-4 text-base font-extrabold text-white shadow-lift transition hover:-translate-y-0.5 active:translate-y-0">
+        class="flex-1 rounded-2xl bg-gradient-to-r from-sky-500 to-sky-600 px-6 py-4 text-base font-extrabold text-white shadow-lift transition hover:-translate-y-0.5 active:translate-y-0 sm:min-w-[200px]">
         &#128196; Soo deji PDF
       </button>
       <button id="btnAgain" type="button"
@@ -1149,6 +1157,45 @@
     }
   }
 
+  /* ================= Wadaagista WhatsApp ================= */
+  // Qoraal WhatsApp ah — *bold* ayaa WhatsApp u yaqaan calaamadda xiddigta
+  function buildShareText() {
+    var L = [];
+    L.push('*Baqti Nasiibka Fadhiga*');
+    L.push(somaliDate(state.date));
+
+    for (var i = 0; i < TEAMS.length; i++) {
+      var tk = TEAMS[i], t = state[tk], prot = t.protectedPlayers || [];
+      var sitCount = t.drawn.length + t.volunteers.length;
+      L.push('');
+      L.push('*' + TEAM_META[tk].label.toUpperCase() + '*');
+
+      L.push('Ciyaaraya (' + t.players.length + '):');
+      for (var p = 0; p < t.players.length; p++) {
+        L.push('• ' + t.players[p] + (prot.indexOf(t.players[p]) !== -1 ? ' (la ilaaliyay)' : ''));
+      }
+
+      L.push('Fadhiga (' + sitCount + '):');
+      for (var d = 0; d < t.drawn.length; d++) L.push((d + 1) + '. ' + t.drawn[d]);
+      for (var v = 0; v < t.volunteers.length; v++) L.push('• ' + t.volunteers[v] + ' (iskiis u fadhiistay)');
+    }
+
+    L.push('');
+    L.push('Haddii ciyaartoy ciyaaraya uu iskiis u fadhiisto, lambarka 1aad ayaa beddelaya — baqti cusub looma baahna.');
+    return L.join('\n');
+  }
+
+  function shareWhatsApp() {
+    if (!state) return;
+    var url = 'https://wa.me/?text=' + encodeURIComponent(buildShareText());
+    var w = window.open(url, '_blank', 'noopener');
+    if (!w) {
+      // Daaqadaha soo booda way xannibmi karaan — isku day si toos ah
+      try { window.location.href = url; }
+      catch (e) { toast('WhatsApp lama furi karo. Fadlan isku day mar kale.', '&#9888;&#65039;', 'rose'); }
+    }
+  }
+
   /* ================= PDF ================= */
   function makePdf() {
     if (!window.jspdf || !window.jspdf.jsPDF) {
@@ -1471,6 +1518,7 @@
     });
 
     /* --- Natiijada --- */
+    $('btnShare').addEventListener('click', shareWhatsApp);
     $('btnPdf').addEventListener('click', makePdf);
     $('btnAgain').addEventListener('click', function () {
       toast(LOCK_MSG, '&#128274;', 'amber');
