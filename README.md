@@ -17,8 +17,8 @@ squad is split into two teams of 8; each team runs its own independent lottery
    Beddel kooxaha*.
 2. **Tallaabo 2 — Kuwa iskood u fadhiistay.** Koox kasta si gaar ah u jawaab.
    Kuwa iskood u fadhiista waa laga jaraa 3-da fadhiga ee kooxdooda.
-3. **Tallaabo 3 — Jimcadi hore.** Kuwa baqtigii hore ku dhacay (*jimcadi hore
-   fadhiye*): si toos ah ayay u galayaan 5-ta ciyaaraya, qorshahana kama mid aha.
+3. **Tallaabo 3 — Ilaalinta.** Kuwa baqtigii hore ku dhacay waa la ilaalinayaa:
+   si toos ah ayay u galayaan 5-ta ciyaaraya, qorshahana kama mid aha.
 4. **Tallaabo 4 — Xafladda.** Riix *Bilow Baqti Nasiibka*. Koox A ayaa horeeya,
    kadibna Koox B — hal magac mar.
 5. **Natiijada** — kaarka la wadaagi karo iyo badhanka *Soo deji PDF*.

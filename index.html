@@ -72,7 +72,7 @@
   .chip-input:checked + .chip-body .chip-dot { background: #f59e0b; border-color: #f59e0b; }
   .chip-input:checked + .chip-body .chip-dot svg { opacity: 1; transform: scale(1); }
   .chip-input:focus-visible + .chip-body { outline: 2px solid #0ea5e9; outline-offset: 2px; }
-  /* --- Chips: kuwa jimcadi hore fadhiyay (indigo) --- */
+  /* --- Chips: kuwa la ilaalinayo (indigo) --- */
   .prot-grid .chip-input:checked + .chip-body {
     border-color: #6366f1;
     background: linear-gradient(180deg, #eef2ff, #e0e7ff);
@@ -252,15 +252,14 @@
     <div class="flex flex-wrap items-start justify-between gap-3">
       <div>
         <div class="mb-3 inline-flex items-center gap-2 rounded-full bg-indigo-50 px-3 py-1 text-[11px] font-bold uppercase tracking-wider text-indigo-600">
-          Tallaabo 3 &middot; Jimcadi hore
+          Tallaabo 3 &middot; Ilaalinta
         </div>
         <h2 class="text-xl font-extrabold leading-snug text-slate-900 sm:text-2xl">
           Ma jiraan ciyaartoy baqti nasiibkii hore ku dhacay?
         </h2>
         <p class="mt-1 max-w-2xl text-[15px] text-slate-500">
-          Kuwa <span class="font-semibold text-slate-700">jimcadi hore fadhiyay</span> &mdash; si toos ah
-          ayay u galayaan 5-ta ciyaaraya ee kooxdooda, baqtigana kama mid noqonayaan.
-          Kuwa <span class="font-semibold text-slate-700">iskood</span> u fadhiistay tan ma helayaan.
+          Kuwaas waa la ilaalinayaa &mdash; si toos ah ayay u galayaan 5-ta ciyaaraya ee kooxdooda.
+          Kuwa <span class="font-semibold text-slate-700">iskood</span> u fadhiistay ilaalin ma helayaan.
         </p>
       </div>
       <button id="btnBackVol" type="button"
@@ -710,7 +709,7 @@
     }
   }
 
-  /* ================= Chips (iskood / jimcadi hore) ================= */
+  /* ================= Chips (iskood / la ilaaliyay) ================= */
   function chipHTML(name, hoverTone) {
     return '<label class="relative block cursor-pointer">' +
       '<input type="checkbox" class="chip-input peer sr-only" value="' + esc(name) + '" />' +
@@ -828,7 +827,7 @@
     var mm = teamMath(tk);
     var p = panelEl(tk, kind);
     p.querySelector('.math').textContent =
-      'Fadhiistay iskood: ' + mm.v + ' · Jimcadi hore fadhiye: ' + mm.p +
+      'Fadhiistay iskood: ' + mm.v + ' · La ilaaliyay: ' + mm.p +
       ' · Baqti laga qaadayaa: ' + mm.need + ' · Ku jira qorshaha: ' + mm.pool;
 
     var warn = p.querySelector('.warn');
@@ -845,7 +844,7 @@
       warnText.className = 'warn-text text-[12.5px] font-semibold leading-relaxed text-rose-600';
       warnText.textContent =
         'Waxaa la saarayaa ' + mm.need + ' laakiin qorshaha waxaa ku jira ' + mm.pool + ' oo keliya (8 − ' +
-        mm.v + ' iskood u fadhiistay − ' + mm.p + ' jimcadi hore fadhiye = ' + mm.pool + '). Fadlan yaree tirada jimcadi hore fadhiyay ugu yaraan ' +
+        mm.v + ' iskood u fadhiistay − ' + mm.p + ' la ilaaliyay = ' + mm.pool + '). Fadlan yaree tirada la ilaalinayo ugu yaraan ' +
         (mm.need - mm.pool) + ' qof.';
       confirmBox.checked = false;
     } else if (mm.over) {
@@ -1173,7 +1172,7 @@
 
       L.push('Ciyaaraya (' + t.players.length + '):');
       for (var p = 0; p < t.players.length; p++) {
-        L.push('• ' + t.players[p] + (prot.indexOf(t.players[p]) !== -1 ? ' (jimcadi hore fadhiye)' : ''));
+        L.push('• ' + t.players[p] + (prot.indexOf(t.players[p]) !== -1 ? ' (la ilaaliyay)' : ''));
       }
 
       L.push('Fadhiga (' + sitCount + '):');
@@ -1290,7 +1289,7 @@
           doc.setFont('helvetica', 'normal');
           doc.setFontSize(7);
           doc.setTextColor(79, 70, 229);
-          doc.text('Jimcadi hore fadhiye', x + colW - 4, y, { align: 'right' });
+          doc.text('La ilaaliyay', x + colW - 4, y, { align: 'right' });
         }
         y += rowH;
       }
